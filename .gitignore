@@ -1,0 +1,17 @@
+# Ignore logs
+logs/
+
+# Ignore database file
+airflow.db
+
+# Ignore DS store
+.DS_Store
+
+# Ignore pycache
+__pycache__/
+
+# Ignore environment variables
+.env
+
+# Ignore config file
+airflow.cfg
