@@ -1,10 +1,20 @@
-FROM python:3.7
+FROM apache/airflow:latest
 
-# install and initialize airflow
-RUN pip install apache-airflow
+USER root
 
-# copy dags and install requirements
-COPY requirements.txt .
-RUN pip install --no-cache -r requirements.txt
+RUN apt-get update && \
+    apt-get install -y default-jdk && \
+    rm -rf /var/lib/apt/lists/*
 
-CMD ["python", "./dags/new_attempt.py"]
+ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-arm64
+
+USER airflow
+
+COPY requirements.txt /opt/airflow/requirements.txt
+
+RUN pip install --no-cache-dir -r /opt/airflow/requirements.txt
+
+WORKDIR /opt/airflow
+
+ENTRYPOINT ["/bin/bash", "-c"]
+CMD ["airflow scheduler"]

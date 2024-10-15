@@ -119,12 +119,11 @@ services:
 
   airflow-webserver:
     <<: *airflow-common
+    container_name: airflow_webserver
     entrypoint: /bin/bash
     command: >
       -c "pip install --no-cache-dir -r /opt/airflow/requirements.txt &&
            airflow webserver"
-    env_file:
-      - .env
     ports:
       - "8080:8080"
     healthcheck:
@@ -141,6 +140,7 @@ services:
 
   airflow-scheduler:
     <<: *airflow-common
+    container_name: airflow_scheduler
     entrypoint: /bin/bash
     command: >
       -c "pip install --no-cache-dir -r /opt/airflow/requirements.txt &&
@@ -184,7 +184,12 @@ services:
 
   airflow-triggerer:
     <<: *airflow-common
-    command: triggerer
+    container_name: airflow_triggerer
+    entrypoint: /bin/bash
+    command: 
+      -c "airflow triggerer"
+    env_file:
+      - .env
     healthcheck:
       test: ["CMD-SHELL", 'airflow jobs check --job-type TriggererJob --hostname "$${HOSTNAME}"']
       interval: 30s
@@ -199,6 +204,7 @@ services:
 
   airflow-init:
     <<: *airflow-common
+    container_name: airflow_init
     entrypoint: /bin/bash
     # yamllint disable rule:line-length
     command:
@@ -263,6 +269,7 @@ services:
 
   airflow-cli:
     <<: *airflow-common
+    container_name: airflow_cli
     profiles:
       - debug
     environment:

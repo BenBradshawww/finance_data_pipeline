@@ -1,1 +1,2 @@
-pyspark
+pandas
+psycopg2-binary
