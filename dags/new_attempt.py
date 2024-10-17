@@ -8,6 +8,8 @@ from airflow.operators.python import PythonOperator
 import requests
 import logging
 import os
+import json
+import re 
 
 import psycopg2
 
@@ -18,12 +20,24 @@ default_args = {
 }
 
 conn = psycopg2.connect(
-        host="postgres",
-        database=os.getenv('POSTGRES_DATABSE'),
-        user=os.getenv('POSTGRES_USERNAME'),
-        password=os.getenv('POSTGRES_PASSWORD'),
-        port="5432"
-    )
+    host="postgres",
+    database=os.getenv('POSTGRES_DATABSE'),
+    user=os.getenv('POSTGRES_USERNAME'),
+    password=os.getenv('POSTGRES_PASSWORD'),
+    port="5432"
+)
+
+mapping = {
+    '1. open':'stocks_open',
+    '2. high':'stocks_high',
+    '3. low':'stocks_low',
+    '4. close':'stocks_close',
+    '5. adjusted close':'stocks_adjusted_close',
+    '6. volume':'stocks_volume',
+    '7. dividend amount':'stocks_dividend_amount',
+    '8. split coefficient':'split_coefficient',
+}
+   
 
 #conf = SparkConf().set("spark.ui.port", "4045") 
 
@@ -48,7 +62,7 @@ def create_table(**kwargs):
             stocks_high DECIMAL(10, 2),
             stocks_low DECIMAL(10, 2),
             stocks_close DECIMAL(10, 2),
-            stocks_adjusted DECIMAL(10, 2),
+            stocks_adjusted_close DECIMAL(10, 2),
             stocks_volume DECIMAL(10, 2),
             stocks_dividend_amount DECIMAL(10, 4),
             stocks_split_coefficient DECIMAL(10, 1)
@@ -169,26 +183,44 @@ def clean_data(**kwargs):
     if previous_data:
         return previous_data
     
-    json_list = kwargs['ti'].xcom_pull(task_ids='get_data', key='response_json')
-    json_list = json.loads(json_list)
+    json_objects = kwargs['ti'].xcom_pull(task_ids='get_data', key='response_json')
+    list_of_dataframes = []
+    for json_object in json_objects:
+        print(json_object)
+        stock_name = json_object['Meta Data']['2. Symbol']
+        time_series_data = json_object['Time Series (Daily)']
 
-    for stock_data in json_list:
-        stock_name = stock_data['Meta Data']['Symbol']
-        time_series_data = stock_data['Time Series (Daily)']
+        values = time_series_data.values()
+        print(values)
 
-        print(stock_name)
+        time_zones_dataframes = []
+        for time_zone, data in time_series_data.items():
+            print(data)
+            df = pd.DataFrame(data, index=[0])
+            df['stocks_time_zone'] = time_zone
 
-    print(response_list)
+            time_zones_dataframes.append(df)
+        
+        combined_df = pd.concat(time_zones_dataframes, ignore_index=True)
+        combined_df['stock_name'] = stock_name
 
-    df = pd.read_json(response_list)
+        list_of_dataframes.append(combined_df.copy(deep=True))
 
+    df = pd.concat(list_of_dataframes, ignore_index=True)
     df.drop_duplicates(inplace=True)
     df.dropna(inplace=True)
+    df.rename(columns=mapping, inplace=True)
+
+    for value in mapping.values():
+        try:
+            df[value] = pd.to_numeric(df[value], errors='raise')
+        except:
+            raise KeyError(f'Mapping to numeric values has failed. Column {value} does not exist in the dataframe')
 
     last_date = get_last_date()
     start_date = last_date if last_date else kwargs['dag'].start_date 
 
-    kwargs['ti'].xcom_push(key='df', value=df_no_nas)
+    kwargs['ti'].xcom_push(key='df', value=df)
 
 def push_to_warehouse(**kwargs):
     
