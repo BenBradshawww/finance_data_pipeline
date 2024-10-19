@@ -6,7 +6,7 @@ def create_table(**kwargs):
     try:
         conn = psycopg2.connect(
             host="postgres",
-            database=os.getenv('POSTGRES_DATABSE'),
+            database=os.getenv('POSTGRES_DATBASE'),
             user=os.getenv('POSTGRES_USERNAME'),
             password=os.getenv('POSTGRES_PASSWORD'),
             port="5432"
@@ -16,8 +16,15 @@ def create_table(**kwargs):
         cursor = conn.cursor()
 
         query = """
+            CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+        """
+        cursor.execute(query)
+
+        conn.commit()
+
+        query = """
             CREATE TABLE IF NOT EXISTS stocks (
-                stocks_id SERIAL PRIMARY KEY,
+                stocks_id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
                 stocks_updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 stocks_name VARCHAR(10),
                 stocks_date VARCHAR(10),

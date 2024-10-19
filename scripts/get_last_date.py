@@ -1,11 +1,14 @@
 import psycopg2
+import logging
 import os
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def get_last_date(**kwargs):
 
     conn = psycopg2.connect(
         host="postgres",
-        database=os.getenv('POSTGRES_DATABSE'),
+        database=os.getenv('POSTGRES_DATBASE'),
         user=os.getenv('POSTGRES_USERNAME'),
         password=os.getenv('POSTGRES_PASSWORD'),
         port="5432"
@@ -26,7 +29,7 @@ def get_last_date(**kwargs):
         latest_value = cursor.fetchone()
     except:
         latest_value=None
-        print('No date found in the table stocks')
+        logging.info('No id found in the table stocks')
 
     cursor.close()
     conn.close()

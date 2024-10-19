@@ -89,6 +89,7 @@ x-airflow-common:
 
 services:
   postgres:
+    container_name: postgres
     image: postgres:13
     environment:
       POSTGRES_USER: airflow
@@ -125,6 +126,8 @@ services:
     command: >
       -c "pip install --no-cache-dir -r /opt/airflow/requirements.txt &&
            airflow webserver"
+    env_file:
+      - .env
     ports:
       - "8080:8080"
     healthcheck:

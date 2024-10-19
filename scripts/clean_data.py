@@ -10,8 +10,22 @@ mapping = {
     '5. adjusted close':'stocks_adjusted_close',
     '6. volume':'stocks_volume',
     '7. dividend amount':'stocks_dividend_amount',
-    '8. split coefficient':'split_coefficient',
+    '8. split coefficient':'stocks_split_coefficient',
 }
+
+column_order = [
+    'stocks_name',
+    'stocks_date',
+    'stocks_timezone',
+    'stocks_open',
+    'stocks_high',
+    'stocks_low',
+    'stocks_close',
+    'stocks_adjusted_close',
+    'stocks_volume',
+    'stocks_dividend_amount',
+    'stocks_split_coefficient'
+]
 
 logging.basicConfig(level=logging.INFO)
 
@@ -37,12 +51,14 @@ def clean_data(**kwargs):
         for time_zone, data in time_series_data.items():
             print(data)
             df = pd.DataFrame(data, index=[0])
-            df['stocks_time_zone'] = time_zone
+            df['stocks_timezone'] = time_zone
+            df['stocks_timezone'] = pd.to_datetime(df['stocks_timezone'])
 
             time_zones_dataframes.append(df)
         
         combined_df = pd.concat(time_zones_dataframes, ignore_index=True)
-        combined_df['stock_name'] = stock_name
+        combined_df['stocks_name'] = stock_name
+        combined_df['stocks_date'] = combined_df['stocks_timezone'].dt.tz_localize(None)
 
         list_of_dataframes.append(combined_df.copy(deep=True))
 
@@ -50,6 +66,7 @@ def clean_data(**kwargs):
     df.drop_duplicates(inplace=True)
     df.dropna(inplace=True)
     df.rename(columns=mapping, inplace=True)
+    df = df[column_order]
 
     for value in mapping.values():
         try:
