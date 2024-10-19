@@ -1,5 +1,8 @@
 import psycopg2
 import os
+import logging
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def drop_table(**kwargs):
 
@@ -16,7 +19,7 @@ def drop_table(**kwargs):
         cursor = conn.cursor()
 
         query = """
-            DROP TABLE IF EXISTS table_name;
+            DROP TABLE IF EXISTS stocks;
         """
         
         cursor.execute(query)
@@ -27,5 +30,6 @@ def drop_table(**kwargs):
         conn.rollback() 
         raise ValueError('Connection Issue')
     finally:
+        logging.info('Table stocks was dropped')
         cursor.close()
         conn.close()
