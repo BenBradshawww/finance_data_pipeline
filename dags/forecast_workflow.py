@@ -5,7 +5,8 @@ import sys
 
 sys.path.append('/opt/airflow')
 
-from scripts.drop_table_scripts.drop_table import drop_table
+from scripts.forecast_scripts.get_data import get_data
+from scripts.forecast_scripts.train_model import train_model
 
 default_args = {
     'owner': 'ben',
@@ -24,4 +25,9 @@ with DAG(
         python_callable=get_data,
     )
 
-    task0
+    task1 = PythonOperator(
+        task_id='train_model',
+        python_callable=train_model,
+    )
+
+    task0 >> task1
