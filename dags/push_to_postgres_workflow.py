@@ -13,14 +13,14 @@ import psycopg2
 import sys
 
 #sys.path.append(os.path.join(os.path.dirname(os.getcwd()), 'scripts'))
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'scripts'))
-sys.path.append('/opt/airflow/scripts')
+#sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'scripts'))
+sys.path.append('/opt/airflow')
 
-from create_table import create_table
-from get_last_date import get_last_date
-from get_data import get_data
-from clean_data import clean_data
-from push_to_warehouse import push_to_warehouse
+from scripts.push_to_postgres_scripts.create_table import create_table
+from scripts.push_to_postgres_scripts.get_last_date import get_last_date
+from scripts.push_to_postgres_scripts.get_data import get_data
+from scripts.push_to_postgres_scripts.clean_data import clean_data
+from scripts.push_to_postgres_scripts.push_to_postgres import push_to_postgres
 
 default_args = {
     'owner': 'ben',
@@ -30,8 +30,8 @@ default_args = {
 
 with DAG(
     default_args=default_args,
-    dag_id='real_dag',
-    description='My first dag',
+    dag_id='push_to_postgres',
+    description='Push to postgres workflow',
     start_date=datetime(2024, 10, 8),
     schedule='0 0 * * *',
     catchup=False
@@ -53,8 +53,8 @@ with DAG(
     )
 
     task3 = PythonOperator(
-        task_id='push_to_warehouse',
-        python_callable=push_to_warehouse, 
+        task_id='push_to_postgres',
+        python_callable=push_to_postgres, 
     )
 
     task0 >> task1 >> task2 >> task3

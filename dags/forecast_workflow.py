@@ -1,6 +1,5 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
-
 from datetime import datetime, timedelta
 import sys
 
@@ -16,13 +15,13 @@ default_args = {
 
 with DAG(
     default_args=default_args,
-    dag_id='drop_table',
-    description='Drop table workflow'
+    dag_id='forecast',
+    description='Forecasting workflow'
 ) as dag:
 
     task0 = PythonOperator(
-        task_id='drop_table',
-        python_callable=drop_table,
+        task_id='get_data',
+        python_callable=get_data,
     )
 
     task0
