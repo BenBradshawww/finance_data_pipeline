@@ -26,8 +26,8 @@ def create_table(**kwargs):
             CREATE TABLE IF NOT EXISTS stocks (
                 stocks_id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
                 stocks_updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                stocks_name VARCHAR(10),
-                stocks_date VARCHAR(10),
+                stocks_name VARCHAR(50),
+                stocks_date DATE,
                 stocks_timezone TIMESTAMP,
                 stocks_open DECIMAL(10, 2),
                 stocks_high DECIMAL(10, 2),

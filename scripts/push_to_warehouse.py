@@ -8,7 +8,7 @@ def push_to_warehouse(**kwargs):
 
     conn = psycopg2.connect(
             host="postgres",
-            database=os.getenv('POSTGRES_DATBASE'),
+            database=os.getenv('POSTGRES_DATABASE'),
             user=os.getenv('POSTGRES_USERNAME'),
             password=os.getenv('POSTGRES_PASSWORD'),
             port="5432"
@@ -17,6 +17,7 @@ def push_to_warehouse(**kwargs):
     cursor = conn.cursor()
 
     values = [tuple(row) for row in df.itertuples(index=False)]
+    print(values)
 
     query = """
         INSERT INTO stocks (
