@@ -246,3 +246,5 @@ services:
 
 volumes:
   postgres-db-volume:
+  pgadmin-volume:
+
