@@ -1,22 +1,10 @@
 import psycopg2
 import os
 import logging
-import pandas as pd
-
-columns = [
-    'stocks_name', 
-    'stocks_date', 
-    'stocks_adjusted_close'
-]
-
-column_mapping = {
-    'stocks_adjusted_close': 'y',
-    'stocks_date': 'ds'
-}
 
 logging.basicConfig(level=logging.INFO)
 
-def run_query(query, is_select=False):
+def run_query(query):
 
     conn = psycopg2.connect(
             host="postgres",
@@ -33,8 +21,6 @@ def run_query(query, is_select=False):
         cursor.execute(query)
         logging.info(f'Query run successfully')
         conn.commit()
-        if is_select:
-            return cursor.fetchall()
 
     except psycopg2.OperationalError as e:
         logging.error(f"Operational Error: {e.pgcode} - {e.pgerror}")
@@ -60,37 +46,22 @@ def run_query(query, is_select=False):
         cursor.close()
         conn.close()
 
-
-def get_data(**kwargs):
+def recreate_forecasts_table(**kwargs):
 
     query = """
-            CREATE TABLE IF NOT EXISTS forecasts (
-                forecasts_id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-                forecasts_updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                forecasts_name VARCHAR(50),
-                forecasts_date DATE,
-                forecasts_adjusted_close DECIMAL(10, 2)
-            );
-        """
+        DROP TABLE IF EXISTS forecasts;
+    """
     
-    run_query(query=query)
+    run_query(query)
 
     query = """
-        SELECT
-            stocks_name,
-            stocks_date,
-            stocks_adjusted_close
-        FROM stocks;
+        CREATE TABLE IF NOT EXISTS forecasts (
+            forecasts_id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+            forecasts_updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            forecasts_name VARCHAR(50),
+            forecasts_date DATE,
+            forecasts_adjusted_close DECIMAL(10, 2)
+        );
     """
 
-    data = run_query(query=query, is_select=True)
-        
-    df = pd.DataFrame(data, columns=columns)
-
-    if df.shape[0] == 0:
-        raise ValueError(f"No data was returned from the database")
-        
-    df.rename(columns=column_mapping, inplace=True)
-    
-    kwargs['ti'].xcom_push(key='df', value=df)
-    
+    run_query(query)
