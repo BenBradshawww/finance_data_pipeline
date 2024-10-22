@@ -21,10 +21,10 @@ def run_query(query, is_insert=False, values=None):
         logging.info(f'Running query: {query}')
         if not is_insert:
             cursor.execute(query)
-            logging.info(f'Query run successfully')
-            conn.commit()
         else:
             execute_values(cursor, query, values)
+        logging.info(f'Query run successfully')
+        conn.commit()
 
     except psycopg2.OperationalError as e:
         logging.error(f"Operational Error: {e.pgcode} - {e.pgerror}")

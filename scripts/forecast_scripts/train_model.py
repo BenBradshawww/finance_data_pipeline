@@ -6,6 +6,26 @@ import copy
 
 logging.basicConfig(level=logging.INFO)
 
+column_ordering = [
+    'name',
+    'ds',
+    'yhat',
+    'trend',
+    'yhat_lower',
+    'yhat_upper',
+    'trend_lower',
+    'trend_upper',
+    'additive_terms',
+    'additive_terms_lower',
+    'additive_terms_upper',
+    'weekly',
+    'weekly_lower',
+    'weekly_upper',
+    'multiplicative_terms',
+    'multiplicative_terms_lower',
+    'multiplicative_terms_upper'
+]
+
 def train_model(**kwargs):
 
     df = kwargs['ti'].xcom_pull(task_ids='get_data', key='df')
@@ -27,7 +47,8 @@ def train_model(**kwargs):
 
         forecast = model.predict(future)
 
-        forecast['forecasts_name'] = stock
+        forecast['name'] = stock
+        forecast = forecast[column_ordering]
     
         forecasts_list.append(copy.deepcopy(forecast))
 
