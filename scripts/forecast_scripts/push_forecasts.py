@@ -5,7 +5,7 @@ import logging
 
 logging.basicConfig(level=logging.INFO)
 
-def run_query(query, is_select=False):
+def run_query(query, is_insert=False, values=None):
 
     conn = psycopg2.connect(
             host="postgres",
@@ -24,7 +24,7 @@ def run_query(query, is_select=False):
             logging.info(f'Query run successfully')
             conn.commit()
         else:
-            execute_values(cursor, is_insert, query, values)
+            execute_values(cursor, query, values)
 
     except psycopg2.OperationalError as e:
         logging.error(f"Operational Error: {e.pgcode} - {e.pgerror}")
@@ -53,17 +53,33 @@ def run_query(query, is_select=False):
 
 def push_forecasts(**kwargs):
     
-    forecast = kwargs['ti'].xcom_pull(task_ids='train_model', key='forecast')
+    forecasts_list = kwargs['ti'].xcom_pull(task_ids='train_model', key='forecasts_list')
 
-    print(forecast)
-    values = [tuple(row) for row in forecast.itertuples(index=False)]
+    for forecast in forecasts_list:
+        print(forecast)
+        values = [tuple(row) for row in forecast.itertuples(index=False)]
+    print(values)
 
     query = """
         INSERT INTO forecasts (
             forecasts_name,
             forecasts_date, 
-            forecasts_m
+            forecasts_yhat,
+            forecasts_trend,
+            forecasts_yhat_lower,
+            forecasts_yhat_upper,
+            forecasts_trend_lower,
+            forecasts_trend_upper,
+            forecasts_additive_terms,
+            forecasts_additive_terms_lower,
+            forecasts_additive_terms_upper,
+            forecasts_weekly,
+            forecasts_weekly_lower,
+            forecasts_weekly_upper,
+            forecasts_multiplicative_terms,
+            forecasts_multiplicative_terms_lower,
+            forecasts_multiplicative_terms_upper
         ) VALUES %s
     """
 
-    run_query(query)
+    run_query(query, is_insert=True, values=values)

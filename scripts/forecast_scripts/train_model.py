@@ -2,18 +2,36 @@ import psycopg2
 import os
 import logging
 from prophet import Prophet
+import copy
+
+logging.basicConfig(level=logging.INFO)
 
 def train_model(**kwargs):
 
     df = kwargs['ti'].xcom_pull(task_ids='get_data', key='df')
+    unique_stocks = df['stocks_name'].unique().tolist()
 
-    model = Prophet()
+    forecasts_list = []
 
-    model.fit(df)
+    for stock in unique_stocks:
+        logging.info(f'Training {stock} model')
 
-    future = model.make_future_dataframe(periods=30)
+        stock_df = df[df['stocks_name']==stock]
 
-    forecast = model.predict(future)
+        model = Prophet()
 
-    kwargs['ti'].xcom_push(key='forecast', value=forecast)
+        model.fit(stock_df)
+        logging.info(f'Finished training {stock} model')
+        logging.info(f'Forecasting {stock}')
+        future = model.make_future_dataframe(periods=30)
+
+        forecast = model.predict(future)
+
+        forecast['forecasts_name'] = stock
+    
+        forecasts_list.append(copy.deepcopy(forecast))
+
+        logging.info(f'Finished forecasting {stock}')
+    
+    kwargs['ti'].xcom_push(key='forecasts_list', value=forecasts_list)
 
