@@ -101,13 +101,26 @@ services:
     volumes:
       - pgadmin-volume:/var/lib/pgadmin
 
+  streamlit:
+    container_name: streamlit
+    working_dir: /usr/src/app
+    build: ./
+    env_file:
+      - .env
+    ports:
+      - "8501:8501"
+    command: streamlit run main.py --server.port 8501 --server.address=0.0.0.0
+    volumes:
+      - ./streamlit:/usr/src/app  # Bind Mount
+    image: yourstreamlitapp:latest
+
   airflow-webserver:
     <<: *airflow-common
     container_name: airflow_webserver
     entrypoint: /bin/bash
     command: >
-      -c "pip install --no-cache-dir -r /opt/airflow/requirements.txt &&
-           airflow webserver"
+      -c "pip install --no-cache-dir -r /opt/airflow/requirements.txt && 
+          airflow webserver"
     env_file:
       - .env
     ports:
@@ -242,9 +255,9 @@ services:
     command:
       - bash
       - -c
-      - airflow
+      - airflow  
 
 volumes:
-  postgres-db-volume:
-  pgadmin-volume:
+  postgres-db-volume: {} # Named Volumes
+  pgadmin-volume: {}
 

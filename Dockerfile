@@ -1,20 +1,14 @@
-FROM apache/airflow:latest
+FROM python:3.7
 
-USER root
+WORKDIR /usr/src/app
 
-RUN apt-get update && \
-    apt-get install -y default-jdk && \
-    rm -rf /var/lib/apt/lists/*
+# dont write pyc files
+# dont buffer to stdout/stderr
 
-ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-arm64
+COPY ./requirements.txt /usr/src/app/requirements.txt
 
-USER airflow
+# dependencies
+RUN pip install --upgrade pip setuptools wheel \
+    && pip install --no-cache-dir -r requirements.txt 
 
-COPY requirements.txt /opt/airflow/requirements.txt
-
-RUN pip install --no-cache-dir -r /opt/airflow/requirements.txt
-
-WORKDIR /opt/airflow
-
-ENTRYPOINT ["/bin/bash", "-c"]
-CMD ["airflow scheduler"]
+COPY ./streamlit /usr/src/app
