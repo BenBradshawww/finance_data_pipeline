@@ -17,6 +17,7 @@ def push_forecasts(**kwargs):
     query = """
         INSERT INTO forecasts (
             forecasts_name,
+            forecasts_field,
             forecasts_date, 
             forecasts_yhat,
             forecasts_trend,

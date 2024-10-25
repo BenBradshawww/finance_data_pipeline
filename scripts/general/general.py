@@ -21,12 +21,18 @@ def run_query(query, is_insert=False, is_select=False, values=None):
         logging.info(f'Running query: {query}')
         if is_insert:
             execute_values(cursor, query, values)
-            
+        else:
+            cursor.execute(query)
+        
         logging.info(f'Query run successfully')
         conn.commit()
 
         if is_select:
-            return cursor.fetchall()
+            if cursor.description:
+                return cursor.fetchall()
+            else:
+                logging.info("No rows returned for the query.")
+                return []
 
     except psycopg2.OperationalError as e:
         logging.error(f"Operational Error: {e.pgcode} - {e.pgerror}")

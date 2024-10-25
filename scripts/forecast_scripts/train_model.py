@@ -8,6 +8,7 @@ logging.basicConfig(level=logging.INFO)
 
 column_ordering = [
     'name',
+    'field',
     'ds',
     'yhat',
     'trend',
@@ -48,6 +49,7 @@ def train_model(**kwargs):
         forecast = model.predict(future)
 
         forecast['name'] = stock
+        forecast['field'] = 'close'
         forecast = forecast[column_ordering]
     
         forecasts_list.append(copy.deepcopy(forecast))

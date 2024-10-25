@@ -109,9 +109,10 @@ services:
       - .env
     ports:
       - "8501:8501"
-    command: streamlit run main.py --server.port 8501 --server.address=0.0.0.0
+    command: streamlit run streamlit/main.py --server.port 8501 --server.address=0.0.0.0
     volumes:
-      - ./streamlit:/usr/src/app  # Bind Mount
+      - ./streamlit:/usr/src/app/streamlit  # Bind Mount
+      - ./scripts:/usr/src/app/scripts
     image: yourstreamlitapp:latest
 
   airflow-webserver:

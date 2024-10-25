@@ -21,6 +21,7 @@ def recreate_forecasts_table(**kwargs):
         forecasts_id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
         forecasts_updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         forecasts_name VARCHAR(50),
+        forecasts_field VARCHAR(50),
         forecasts_date DATE,
         forecasts_yhat DECIMAL(10, 6),
         forecasts_trend DECIMAL(10, 6),

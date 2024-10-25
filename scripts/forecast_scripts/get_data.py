@@ -10,11 +10,11 @@ from general import run_query
 columns = [
     'stocks_name', 
     'stocks_date', 
-    'stocks_adjusted_close'
+    'stocks_close'
 ]
 
 column_mapping = {
-    'stocks_adjusted_close': 'y',
+    'stocks_close': 'y',
     'stocks_date': 'ds'
 }
 
@@ -26,7 +26,7 @@ def get_data(**kwargs):
                 forecasts_updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 forecasts_name VARCHAR(50),
                 forecasts_date DATE,
-                forecasts_adjusted_close DECIMAL(10, 2)
+                forecasts_close DECIMAL(10, 2)
             );
         """
     
@@ -36,7 +36,7 @@ def get_data(**kwargs):
         SELECT
             stocks_name,
             stocks_date,
-            stocks_adjusted_close
+            stocks_close
         FROM stocks;
     """
 
