@@ -37,7 +37,7 @@ def get_data(**kwargs):
     if days_difference <= 1:
         raise AirflowFailException("No difference in the last date in database and execution date.")
 
-
+    
     OUTPUT_SIZE = 'compact' if days_difference < 100 else 'full'
     API_KEY = os.getenv('ALPHA_VANTAGE_API_KEY')
     URL = os.getenv('ALPHA_VANTAGE_URL')
@@ -50,9 +50,9 @@ def get_data(**kwargs):
     for STOCK_SYMBOL in STOCK_SYMBOLS:
 
         querystring = {
-            "function":"TIME_SERIES_DAILY_ADJUSTED",
+            "function":FUNCTION,
             "symbol":STOCK_SYMBOL,
-            "outputsize":"compact",
+            "outputsize":OUTPUT_SIZE,
             "datatype":"json"
         }
 

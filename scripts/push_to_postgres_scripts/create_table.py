@@ -20,14 +20,14 @@ def create_table(**kwargs):
             stocks_name VARCHAR(50),
             stocks_date DATE,
             stocks_timezone TIMESTAMP,
-            stocks_open DECIMAL(10, 2),
-            stocks_high DECIMAL(10, 2),
-            stocks_low DECIMAL(10, 2),
-            stocks_close DECIMAL(10, 2),
-            stocks_adjusted_close DECIMAL(10, 2),
-            stocks_volume DECIMAL(10, 2),
-            stocks_dividend_amount DECIMAL(10, 4),
-            stocks_split_coefficient DECIMAL(10, 1)
+            stocks_open NUMERIC(15, 3),
+            stocks_high NUMERIC(15, 3),
+            stocks_low NUMERIC(15, 3),
+            stocks_close NUMERIC(15, 3),
+            stocks_adjusted_close NUMERIC(15, 3),
+            stocks_volume NUMERIC(15, 3),
+            stocks_dividend_amount NUMERIC(15, 3),
+            stocks_split_coefficient NUMERIC(15, 3)
         );
     """
     

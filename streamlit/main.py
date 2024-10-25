@@ -93,6 +93,8 @@ def plot_data(current_data, forecast_data):
         inplace=True
     )
 
+    current_data_df_365 = current_data_df.tail(180)
+
     updated_forecast_df.sort_values(
         by=['date'],
         ascending=True,
@@ -102,8 +104,8 @@ def plot_data(current_data, forecast_data):
     fig = go.Figure()
 
     fig.add_trace(go.Scatter(
-        x=current_data_df['date'],
-        y=current_data_df['close_price'],
+        x=current_data_df_365['date'],
+        y=current_data_df_365['close_price'],
         mode='lines+markers',
         name='Stock Close Price'
     ))

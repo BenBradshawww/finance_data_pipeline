@@ -32,7 +32,7 @@ with DAG(
     default_args=default_args,
     dag_id='push_to_postgres',
     description='Push to postgres workflow',
-    start_date=datetime(2024, 10, 8),
+    start_date=datetime(2010, 1, 1),
     schedule_interval='0 0 * * *',
     catchup=False
 ) as dag:
