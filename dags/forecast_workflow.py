@@ -19,7 +19,9 @@ default_args = {
 with DAG(
     default_args=default_args,
     dag_id='forecast',
-    description='Forecasting workflow'
+    description='Forecasting workflow',
+    schedule='0 2 * * *',
+    catchup=False
 ) as dag:
 
     task0 = PythonOperator(
