@@ -1,8 +1,7 @@
 ## Summary
-For this project I created an ML pipeline for forecasting the the closing prices of stocks. This forecasting pipeline is scheduled to run daily using cron. Specifically, at 12am the latest stock data is gathered, cleaned, and added to the database. At 2 am
-a model training workflow is run which forecasts the stock closing price over the next 60 days.
+For this project I created an ML pipeline for forecasting the the closing prices of stocks. This forecasting pipeline is scheduled to run daily using cron. Specifically, at 12am the latest stock data is gathered, cleaned, and pushed to the database. At 2 am a model training workflow is run which forecasts the stock closing price over the next 60 days.
 
-My main focus was on actually building the pipeline rather than the accuracy of the forecast. To create the ML pipeline I used 3 tools: postgres, airflow, and docker. To visualize the results I used streamlit.
+My main focus was on building the pipeline rather than the accuracy of the forecast. To create the ML pipeline I used 3 tools: postgres, airflow, and docker and to visualize the results I used streamlit.
 
 **Postgres**
 
