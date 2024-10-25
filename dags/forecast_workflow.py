@@ -20,7 +20,8 @@ with DAG(
     default_args=default_args,
     dag_id='forecast',
     description='Forecasting workflow',
-    schedule='0 2 * * *',
+    start_date=datetime(2024, 1, 1),
+    schedule_interval='0 2 * * *',
     catchup=False
 ) as dag:
 

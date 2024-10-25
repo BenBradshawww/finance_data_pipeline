@@ -2,12 +2,15 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
+#def get_stocks():
 
-st.title('My First Streamlit App')
 
-st.write("Hello, welcome to my first Streamlit app!")
+#def get_data():
 
-slider_value = st.slider('Select a number', 0, 100, 50)
+
+
+
+stock = st.selectbox('Select a stock', [])
 
 st.write(f'You selected: {slider_value}')
 
