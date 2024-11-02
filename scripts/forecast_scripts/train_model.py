@@ -44,7 +44,7 @@ def train_model(**kwargs):
         model.fit(stock_df)
         logging.info(f'Finished training {stock} model')
         logging.info(f'Forecasting {stock}')
-        future = model.make_future_dataframe(periods=30)
+        future = model.make_future_dataframe(periods=5)
 
         forecast = model.predict(future)
 

@@ -1,6 +1,7 @@
 import logging
 import pandas as pd
 from scripts.push_to_postgres_scripts.get_last_date import get_last_date
+from pyspark.sql.functions import lit, col
 from datetime import date
 from pyspark.sql import SparkSession
 import sys
@@ -8,8 +9,9 @@ import sys
 spark = SparkSession.builder \
     .appName("spark_clean_data") \
     .master("spark://spark-master:7077") \
-    .config("spark.driver.memory", "1g") \
-    .config("spark.executor.memory", "1g") \
+    .config("spark.executor.memory", "512m") \
+    .config("spark.driver.memory", "512m") \
+    .config("spark.sql.shuffle.partitions", "2") \
     .getOrCreate()
 
 mapping = {
@@ -46,7 +48,8 @@ def spark_clean_data(**kwargs):
     if previous_data:
         return previous_data
     
-    json_objects = kwargs['ti'].xcom_pull(task_ids='get_data', key='response_json')
+    json_objects = kwargs['ti'].xcom_pull(task_ids='get_api_data', key='response_json')
+    
     list_of_dataframes = []
 
     for json_object in json_objects:
@@ -56,25 +59,22 @@ def spark_clean_data(**kwargs):
         values = time_series_data.values()
 
         time_zones_dataframes = []
+        combined_df = None
         for time_zone, data in time_series_data.items():
             df = pd.DataFrame(data, index=[0])
 
-            spark_df = spark.createDataFrame(pd_df)
+            spark_df = spark.createDataFrame(df)
                 
-            # Add timezone and stock name columns
             spark_df = spark_df \
                 .withColumn("stocks_timezone", lit(time_zone)) \
                 .withColumn("stocks_name", lit(stock_name))
 
-            # Convert the timezone column to a date (if it’s a string)
             spark_df = spark_df.withColumn("stocks_timezone", col("stocks_timezone").cast("timestamp"))
-            
-            # Add to the list of timezone dataframes
-            time_zones_dataframes.append(spark_df)
 
-        combined_df = time_zones_dataframes[0]
-        for sdf in time_zones_dataframes[1:]:
-            combined_df = combined_df.union(sdf)
+            if not combined_df:
+                combined_df = spark_df
+            else:
+                combined_df = combined_df.union(spark_df)
         
         list_of_dataframes.append(combined_df)
 

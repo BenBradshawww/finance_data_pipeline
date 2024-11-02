@@ -13,7 +13,15 @@ To assist me in the visualization of the database I used pgadmin4.
 
 In short, airflow is a platform used to automate workflows.
 
-Similarly to postgres, using airflow is a bit overkill because my workflows were not very complicated. But I wanted to get experience using airflow.
+Similarly to postgres, using airflow is a bit overkill because my workflows were not very complicated. I used airflow to create 3 workflows:
+* A workflow to delete the current database (this was mostly used in testing).
+* A workflow to get the api data and push it to the postgres database.
+* A workflow to create forecasts.
+
+I have attached images of the push_to_postgres and forecast workflow below.
+
+![alt text](./source_images/push_to_postgres_workflow.png)
+![alt text](./source_images/forecast_workflow.png)
 
 **Docker**
 
@@ -36,4 +44,5 @@ As hypothesized, the model's forecasts were unimpressive.
 * Improve the accruracy of the model.
 * Incorporate monthly forecasts.
 * Add pre-commits.
+
 

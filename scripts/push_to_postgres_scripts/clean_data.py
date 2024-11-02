@@ -37,7 +37,7 @@ def clean_data(**kwargs):
     if previous_data:
         return previous_data
     
-    json_objects = kwargs['ti'].xcom_pull(task_ids='get_data', key='response_json')
+    json_objects = kwargs['ti'].xcom_pull(task_ids='get_api_data', key='response_json')
     list_of_dataframes = []
     for json_object in json_objects:
         stock_name = json_object['Meta Data']['2. Symbol']
@@ -49,12 +49,12 @@ def clean_data(**kwargs):
         for time_zone, data in time_series_data.items():
             df = pd.DataFrame(data, index=[0])
             df['stocks_timezone'] = time_zone
-            df['stocks_timezone'] = pd.to_datetime(df['stocks_timezone'])
 
             time_zones_dataframes.append(df)
         
         combined_df = pd.concat(time_zones_dataframes, ignore_index=True)
         combined_df['stocks_name'] = stock_name
+        combined_df['stocks_timezone'] = pd.to_datetime(combined_df['stocks_timezone'])
         combined_df['stocks_date'] = combined_df['stocks_timezone'].dt.tz_localize(None)
 
         list_of_dataframes.append(combined_df.copy(deep=True))

@@ -19,7 +19,7 @@ def working_days_diff(start_date, end_date):
 
 def get_api_data(**kwargs):
 
-    previous_data = kwargs['ti'].xcom_pull(task_ids='get_data', dag_id=kwargs['dag'].dag_id)
+    previous_data = kwargs['ti'].xcom_pull(task_ids='get_api_data', dag_id=kwargs['dag'].dag_id)
 
     if previous_data:
         return previous_data
@@ -64,6 +64,6 @@ def get_api_data(**kwargs):
         response = requests.get(URL, headers=headers, params=querystring)
 
         json_results.append(response.json())
-    
+        
     kwargs['ti'].xcom_push(key='response_json', value=json_results)
     kwargs['ti'].xcom_push(key='last_date', value=last_date.isoformat())
