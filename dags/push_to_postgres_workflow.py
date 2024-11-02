@@ -18,8 +18,8 @@ sys.path.append('/opt/airflow')
 
 from scripts.push_to_postgres_scripts.create_table import create_table
 from scripts.push_to_postgres_scripts.get_last_date import get_last_date
-from scripts.push_to_postgres_scripts.get_data import get_data
-from scripts.push_to_postgres_scripts.clean_data import clean_data
+from scripts.push_to_postgres_scripts.get_api_data import get_api_data
+from scripts.push_to_postgres_scripts.spark_clean_data import spark_clean_data
 from scripts.push_to_postgres_scripts.push_to_postgres import push_to_postgres
 
 default_args = {
@@ -43,13 +43,14 @@ with DAG(
     )
 
     task1 = PythonOperator(
-        task_id='get_data',
-        python_callable=get_data,
+        task_id='get_api_data',
+        python_callable=get_api_data,
     )
 
     task2 = PythonOperator(
-        task_id='clean_data',
-        python_callable=clean_data, 
+        task_id='spark_clean_data',
+        python_callable=spark_clean_data, 
+        provide_context=True,
     )
 
     task3 = PythonOperator(

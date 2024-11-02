@@ -17,7 +17,7 @@ def working_days_diff(start_date, end_date):
     return working_days
 
 
-def get_data(**kwargs):
+def get_api_data(**kwargs):
 
     previous_data = kwargs['ti'].xcom_pull(task_ids='get_data', dag_id=kwargs['dag'].dag_id)
 

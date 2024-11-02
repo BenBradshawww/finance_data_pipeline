@@ -46,7 +46,9 @@
 ---
 x-airflow-common:
   &airflow-common
-  image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:2.10.2}
+  build:
+      context: .
+      dockerfile: Dockerfile.airflow
   environment:
     &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: LocalExecutor
@@ -111,7 +113,7 @@ services:
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "airflow"]
       interval: 10s
-      retries: 5
+      retries: 3
       start_period: 5s
     restart: always
   
@@ -130,7 +132,9 @@ services:
   streamlit:
     container_name: streamlit
     working_dir: /usr/src/app
-    build: ./
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
     env_file:
       - .env
     ports:
@@ -145,9 +149,7 @@ services:
     <<: *airflow-common
     container_name: airflow_webserver
     entrypoint: /bin/bash
-    command: >
-      -c "pip install --no-cache-dir -r /opt/airflow/requirements.txt && 
-          airflow webserver"
+    command: -c "airflow webserver"
     env_file:
       - .env
     ports:
@@ -156,7 +158,7 @@ services:
       test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
       interval: 30s
       timeout: 10s
-      retries: 5
+      retries: 3
       start_period: 30s
     restart: always
     depends_on:
@@ -168,16 +170,14 @@ services:
     <<: *airflow-common
     container_name: airflow_scheduler
     entrypoint: /bin/bash
-    command: >
-      -c "pip install --no-cache-dir -r /opt/airflow/requirements.txt &&
-           airflow scheduler"
+    command: -c "airflow scheduler"
     env_file:
       - .env
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8974/health"]
       interval: 30s
       timeout: 10s
-      retries: 5
+      retries: 3
       start_period: 30s
     restart: always
     depends_on:
@@ -189,15 +189,14 @@ services:
     <<: *airflow-common
     container_name: airflow_triggerer
     entrypoint: /bin/bash
-    command: 
-      -c "airflow triggerer"
+    command: -c "airflow triggerer"
     env_file:
       - .env
     healthcheck:
       test: ["CMD-SHELL", 'airflow jobs check --job-type TriggererJob --hostname "$${HOSTNAME}"']
       interval: 30s
       timeout: 10s
-      retries: 5
+      retries: 3
       start_period: 30s
     restart: always
     depends_on:
@@ -269,20 +268,6 @@ services:
     user: "0:0"
     volumes:
       - ${AIRFLOW_PROJ_DIR:-.}:/sources
-
-  airflow-cli:
-    <<: *airflow-common
-    container_name: airflow_cli
-    profiles:
-      - debug
-    environment:
-      <<: *airflow-common-env
-      CONNECTION_CHECK_MAX_COUNT: "0"
-    # Workaround for entrypoint issue. See: https://github.com/apache/airflow/issues/16252
-    command:
-      - bash
-      - -c
-      - airflow  
 
 volumes:
   postgres-db-volume: {} # Named Volumes
