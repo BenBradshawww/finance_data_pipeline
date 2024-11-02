@@ -31,6 +31,9 @@ To simplify the process of setting up a database and to streamline the pipeline 
 
 Finally, to visualize the results, I created a container to run a streamlit script to display the closing price forecasts.
 
+**PySpark**
+
+For this project I wanted to try to use pyspark in the api data cleaning step. I was successful in installing pyspark however I've realised pyspark does not perform well for smaller datasets. Consequently, I still use the inital scripts which resorts to using pandas.
 
 **Model**
 
@@ -40,9 +43,8 @@ As hypothesized, the model's forecasts were unimpressive.
 ![Alt text](./source_images/streamlit_example.png)
 
 **Next Steps**
-* Incorporate pyspark into my data cleaning step.
 * Improve the accruracy of the model.
 * Incorporate monthly forecasts.
 * Add pre-commits.
-
+* Add more firms
 
