@@ -46,5 +46,4 @@ As hypothesized, the model's forecasts were unimpressive.
 * Improve the accruracy of the model.
 * Incorporate monthly forecasts.
 * Add pre-commits.
-* Add more firms
-
+* Investigate weird forecasts for some firms.
