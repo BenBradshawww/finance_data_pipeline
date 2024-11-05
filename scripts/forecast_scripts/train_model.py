@@ -2,7 +2,6 @@ import psycopg2
 import os
 import logging
 from prophet import Prophet
-import copy
 
 logging.basicConfig(level=logging.INFO)
 
@@ -52,7 +51,7 @@ def train_model(**kwargs):
         forecast['field'] = 'close'
         forecast = forecast[column_ordering]
     
-        forecasts_list.append(copy.deepcopy(forecast))
+        forecasts_list.append(forecast)
 
         logging.info(f'Finished forecasting {stock}')
     

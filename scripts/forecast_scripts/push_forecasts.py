@@ -10,9 +10,11 @@ from general import run_query
 def push_forecasts(**kwargs):
     
     forecasts_list = kwargs['ti'].xcom_pull(task_ids='train_model', key='forecasts_list')
-
+    
+    all_stocks_values = []
     for forecast in forecasts_list:
-        values = [tuple(row) for row in forecast.itertuples(index=False)]
+        stock_values = [tuple(row) for row in forecast.itertuples(index=False)]
+        all_stocks_values.extend(stock_values)
 
     query = """
         INSERT INTO forecasts (
@@ -37,4 +39,4 @@ def push_forecasts(**kwargs):
         ) VALUES %s
     """
 
-    run_query(query, is_insert=True, values=values)
+    run_query(query, is_insert=True, values=all_stocks_values)

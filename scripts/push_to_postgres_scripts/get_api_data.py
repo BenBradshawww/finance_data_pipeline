@@ -42,7 +42,7 @@ def get_api_data(**kwargs):
     API_KEY = os.getenv('ALPHA_VANTAGE_API_KEY')
     URL = os.getenv('ALPHA_VANTAGE_URL')
     
-    STOCK_SYMBOLS = ['MSFT']
+    STOCK_SYMBOLS = ['MSFT', 'AMZN', 'BIRK', 'INTC', 'GOOG']
     FUNCTION = 'TIME_SERIES_DAILY_ADJUSTED'
     
     json_results = []

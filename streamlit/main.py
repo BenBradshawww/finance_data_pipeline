@@ -4,9 +4,12 @@ import pandas as pd
 import numpy as np
 import sys
 import os
+import logging
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../scripts'))
 from general.general import run_query
+
+#logging.basicConfig(level=logging.INFO)
 
 def get_stocks():
 
@@ -18,28 +21,28 @@ def get_stocks():
 
     data = run_query(query, is_select=True)
 
-    return data[0]
+    return data
 
-def get_relevant_data(stock_name):
+def get_relevant_data(stocks):
 
     query = f"""
-      SELECT DISTINCT
+    SELECT DISTINCT
         stocks_date,
-        stocks_adjusted_close
-      FROM stocks
-      WHERE stocks_name = '{stock_name}';
+        stocks_close
+    FROM stocks
+    WHERE stocks_name = '{stock_name}';
     """
 
     current_data = run_query(query, is_select=True)
 
     query = f"""
-      SELECT DISTINCT
+    SELECT DISTINCT
         forecasts_date,
         forecasts_yhat,
         forecasts_yhat_lower,
         forecasts_yhat_upper
-      FROM forecasts
-      WHERE forecasts_name = '{stock_name}';
+    FROM forecasts
+    WHERE forecasts_name = '{stock_name}';
     """
 
     forecast_data = run_query(query, is_select=True)
@@ -128,13 +131,9 @@ def plot_data(current_data, forecast_data):
     st.plotly_chart(fig)
 
 
+stocks = get_stocks()
 
-
-
-data = get_stocks()
-stock_list = []
-for stock_name in data:
-    stock_list.append(stock_name)
+stock_list = [stock[0] for stock in stocks]
 
 stock_name = st.selectbox('Select a stock', stock_list)
 
