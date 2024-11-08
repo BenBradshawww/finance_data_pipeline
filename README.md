@@ -3,6 +3,8 @@ For this project I created an ML pipeline to forecast the closing prices of stoc
 
 My main focus was on building the pipeline rather than the accuracy of the forecast. To create the ML pipeline I used 3 tools: postgres, airflow, and docker and to visualize the results I used streamlit.
 
+![alt text](./source_images/finance_pipeline.png)
+
 **Postgres**
 
 Rather than using a csv to store the data from the api requests, I used a postgres database. Given the small size of the data, postgres is a bit overkill. However, I thought it would be useful to know how to set up a database from scratch.  
